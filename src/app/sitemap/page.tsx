@@ -53,7 +53,7 @@ type GroupConfig = {
   routes: RouteItem[];
   highlighted?: boolean;
   userFlow: {
-    steps: string[];
+    steps: { text: string; path?: string }[];
     entryPoints: string[];
   };
 };
@@ -76,10 +76,10 @@ const groups: GroupConfig[] = [
     ],
     userFlow: {
       steps: [
-        "Landing with AI avatar & quick actions",
-        "Select action: Crowds / Budget / Itinerary / Weather / Tips / Emergency",
-        "Chat interface opens with conversation history",
-        "AI responds with travel recommendations"
+        { text: "Landing with AI avatar & quick actions", path: "/chat" },
+        { text: "Select action: Crowds / Budget / Itinerary / Weather / Tips / Emergency", path: "/chat" },
+        { text: "Chat interface opens with conversation history", path: "/chat" },
+        { text: "AI responds with travel recommendations", path: "/chat" }
       ],
       entryPoints: ["Home CTA 'Talk to AI'", "Nav dropdown 'AI Assistant'"]
     }
@@ -127,10 +127,10 @@ const groups: GroupConfig[] = [
     ],
     userFlow: {
       steps: [
-        "Enter destination, travel dates, and number of travelers",
-        "View live dashboard with 8 data cards",
-        "Explore: Attractions, Prices, Safety, Halal, Weather, Trending, Crowd, Budget",
-        "Navigate to detailed views: Schedule / Budget / Itinerary"
+        { text: "Enter destination, travel dates, and number of travelers", path: "/wanderboard" },
+        { text: "View live dashboard with 8 data cards", path: "/dashboard" },
+        { text: "Explore: Attractions, Prices, Safety, Halal, Weather, Trending, Crowd, Budget", path: "/dashboard" },
+        { text: "Navigate to detailed views: Schedule / Budget / Itinerary", path: "/dashboard/schedule" }
       ],
       entryPoints: ["Nav 'Dashboard'", "Home feature grid"]
     }
@@ -166,15 +166,13 @@ const groups: GroupConfig[] = [
         path: "/informatics/planner",
         label: "Trip Planner",
         icon: ClipboardList,
-        description: "Trip management interface to create, view, and organize upcoming and past trips. Shows trip cards with destination, dates, budget status, and quick actions.",
-        children: [
-          {
-            path: "/informatics/planner/[id]/expenses",
-            label: "Expense Tracking",
-            icon: Wallet,
-            description: "Per-trip expense tracker to log spending by category (food, transport, accommodation, activities). Shows running total vs budget with visual progress indicators."
-          },
-        ]
+        description: "Trip management interface to create, view, and organize upcoming and past trips. Shows trip cards with destination, dates, budget status, and quick actions."
+      },
+      {
+        path: "/informatics/planner/[id]/expenses",
+        label: "Expense Tracking",
+        icon: Wallet,
+        description: "Per-trip expense tracker to log spending by category (food, transport, accommodation, activities). Shows running total vs budget with visual progress indicators."
       },
       {
         path: "/informatics/reflection",
@@ -184,32 +182,32 @@ const groups: GroupConfig[] = [
       },
       {
         path: "/informatics/settings",
-        label: "Settings",
+        label: "Settings Hub",
         icon: Settings,
-        description: "Settings hub for managing personal preferences, account details, and privacy controls. Central access point for profile and privacy sub-pages.",
-        children: [
-          {
-            path: "/informatics/settings/profile",
-            label: "Edit Profile",
-            icon: User,
-            description: "Profile management page to update personal information, travel preferences, default currency, notification settings, and profile picture."
-          },
-          {
-            path: "/informatics/settings/privacy",
-            label: "Privacy Settings",
-            icon: Shield,
-            description: "Privacy controls for managing data sharing preferences, visibility of travel history, and account security options like two-factor authentication."
-          },
-        ]
+        description: "Settings hub for managing personal preferences, account details, and privacy controls. Central access point for profile and privacy sub-pages."
+      },
+      {
+        path: "/informatics/settings/profile",
+        label: "Edit Profile",
+        icon: User,
+        description: "Profile management page to update personal information, travel preferences, default currency, notification settings, and profile picture."
+      },
+      {
+        path: "/informatics/settings/privacy",
+        label: "Privacy Settings",
+        icon: Shield,
+        description: "Privacy controls for managing data sharing preferences, visibility of travel history, and account security options like two-factor authentication."
       },
     ],
     userFlow: {
       steps: [
-        "Complete onboarding: Set comfort vs cost, travel pacing, annual budget",
-        "View personal dashboard with budget donut chart & trip metrics",
-        "Track trips in watchlist with currency exchange insights",
-        "Plan trips and track expenses per trip",
-        "Reflect on past travels and manage settings"
+        { text: "Complete onboarding: Set comfort vs cost, travel pacing, annual budget", path: "/informatics" },
+        { text: "View personal dashboard with budget donut chart & trip metrics", path: "/informatics/dashboard" },
+        { text: "Explore spending patterns and travel analytics", path: "/informatics/insights" },
+        { text: "Plan and organize upcoming trips", path: "/informatics/planner" },
+        { text: "Track expenses for each trip by category", path: "/informatics/planner/1/expenses" },
+        { text: "Reflect on completed travels with journal entries", path: "/informatics/reflection" },
+        { text: "Manage profile and privacy settings", path: "/informatics/settings" }
       ],
       entryPoints: ["Nav 'My Travel'", "Post-login redirect"]
     }
@@ -299,11 +297,12 @@ const groups: GroupConfig[] = [
     ],
     userFlow: {
       steps: [
-        "Browse community hub: My Trips, Events, Stories",
-        "Read and interact with community stories",
-        "Create and share your own travel stories",
-        "Report inappropriate content if needed",
-        "Admin: Review and manage reported content"
+        { text: "Browse community hub: My Trips, Events, Stories", path: "/community" },
+        { text: "Read and interact with community stories", path: "/community/stories/1" },
+        { text: "Create and share your own travel stories", path: "/community/stories/create" },
+        { text: "Discover upcoming community events", path: "/community/events" },
+        { text: "Report inappropriate content if needed", path: "/community/stories/1/report" },
+        { text: "Admin: Review and manage reported content", path: "/admin" }
       ],
       entryPoints: ["Nav 'Community'", "Post-registration"]
     }
@@ -337,10 +336,10 @@ const groups: GroupConfig[] = [
     ],
     userFlow: {
       steps: [
-        "Enter destination, travel dates, number of travelers",
-        "Select travel preferences and style",
-        "Receive AI-generated personalized itinerary",
-        "Review and customize the plan"
+        { text: "Enter destination, travel dates, number of travelers", path: "/predictions" },
+        { text: "Select travel preferences and style", path: "/predictions/preferences" },
+        { text: "Receive AI-generated personalized itinerary", path: "/predictions/plan" },
+        { text: "Review and customize the plan", path: "/predictions/plan" }
       ],
       entryPoints: ["Home CTA 'Plan Your Trip'", "Nav 'Smart Planner'"]
     }
@@ -449,10 +448,23 @@ function GroupCard({ group }: { group: GroupConfig }) {
               )}>
                 {index + 1}
               </div>
-              <span className="text-sm text-slate-700">{step}</span>
-              {index < group.userFlow.steps.length - 1 && (
-                <ArrowRight className="w-3 h-3 text-slate-400 flex-shrink-0 mt-1 hidden sm:block" />
-              )}
+              <div className="flex-1">
+                <span className="text-sm text-slate-700">{step.text}</span>
+                {step.path && (
+                  <Link
+                    href={step.path}
+                    className={cn(
+                      "ml-2 text-xs px-2 py-0.5 rounded-full hover:underline inline-flex items-center gap-1",
+                      group.highlighted
+                        ? "bg-violet-200 text-violet-700 hover:bg-violet-300"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    )}
+                  >
+                    {step.path}
+                    <ArrowRight className="w-3 h-3" />
+                  </Link>
+                )}
+              </div>
             </div>
           ))}
         </div>
