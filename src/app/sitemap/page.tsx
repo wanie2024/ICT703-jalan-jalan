@@ -27,7 +27,11 @@ import {
   ShieldCheck,
   FileText,
   SlidersHorizontal,
-  ClipboardList
+  ClipboardList,
+  ArrowRight,
+  ArrowDown,
+  GitMerge,
+  Navigation2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -35,6 +39,7 @@ type RouteItem = {
   path: string;
   label: string;
   icon: React.ElementType;
+  description: string;
   children?: RouteItem[];
 };
 
@@ -46,6 +51,11 @@ type GroupConfig = {
   bgColor: string;
   borderColor: string;
   routes: RouteItem[];
+  highlighted?: boolean;
+  userFlow: {
+    steps: string[];
+    entryPoints: string[];
+  };
 };
 
 const groups: GroupConfig[] = [
@@ -57,8 +67,22 @@ const groups: GroupConfig[] = [
     bgColor: "bg-emerald-50",
     borderColor: "border-emerald-200",
     routes: [
-      { path: "/chat", label: "AI Travel Assistant", icon: MessageSquare },
+      {
+        path: "/chat",
+        label: "AI Travel Assistant",
+        icon: MessageSquare,
+        description: "Interactive AI chat interface with quick action buttons for crowd checks, budget help, itinerary planning, weather info, local tips, and emergency assistance. Features conversation history sidebar and simulated AI responses."
+      },
     ],
+    userFlow: {
+      steps: [
+        "Landing with AI avatar & quick actions",
+        "Select action: Crowds / Budget / Itinerary / Weather / Tips / Emergency",
+        "Chat interface opens with conversation history",
+        "AI responds with travel recommendations"
+      ],
+      entryPoints: ["Home CTA 'Talk to AI'", "Nav dropdown 'AI Assistant'"]
+    }
   },
   {
     id: 2,
@@ -68,18 +92,48 @@ const groups: GroupConfig[] = [
     bgColor: "bg-blue-50",
     borderColor: "border-blue-200",
     routes: [
-      { path: "/wanderboard", label: "Search Landing", icon: Search },
+      {
+        path: "/wanderboard",
+        label: "Search Landing",
+        icon: Search,
+        description: "Search entry point where users input their destination, travel dates, and number of travelers. Validates input and redirects to the live dashboard with search parameters."
+      },
       {
         path: "/dashboard",
         label: "Live Data Dashboard",
         icon: LayoutDashboard,
+        description: "Main dashboard displaying 8 real-time data cards: Attractions, Price Comparison, Safety Info, Halal Spots, Weather Forecast, Trending Spots, Crowd & Traffic levels, and Budget Metrics. Includes search bar and CTA to check itinerary.",
         children: [
-          { path: "/dashboard/budget", label: "Budget Overview", icon: Wallet },
-          { path: "/dashboard/schedule", label: "Schedule & Updates", icon: Calendar },
-          { path: "/dashboard/itinerary", label: "Itinerary View", icon: Map },
+          {
+            path: "/dashboard/budget",
+            label: "Budget Overview",
+            icon: Wallet,
+            description: "Detailed budget breakdown showing estimated costs for accommodation, food, transport, and activities. Displays daily and total trip cost projections."
+          },
+          {
+            path: "/dashboard/schedule",
+            label: "Schedule & Updates",
+            icon: Calendar,
+            description: "Real-time schedule management with live updates on events, openings, and time-sensitive information for the destination."
+          },
+          {
+            path: "/dashboard/itinerary",
+            label: "Itinerary View",
+            icon: Map,
+            description: "Visual day-by-day itinerary planner with map integration, showing planned activities, timings, and travel routes between locations."
+          },
         ]
       },
     ],
+    userFlow: {
+      steps: [
+        "Enter destination, travel dates, and number of travelers",
+        "View live dashboard with 8 data cards",
+        "Explore: Attractions, Prices, Safety, Halal, Weather, Trending, Crowd, Budget",
+        "Navigate to detailed views: Schedule / Budget / Itinerary"
+      ],
+      entryPoints: ["Nav 'Dashboard'", "Home feature grid"]
+    }
   },
   {
     id: 3,
@@ -88,29 +142,77 @@ const groups: GroupConfig[] = [
     color: "text-violet-700",
     bgColor: "bg-violet-50",
     borderColor: "border-violet-200",
+    highlighted: true,
     routes: [
-      { path: "/informatics", label: "Onboarding", icon: Sparkles },
-      { path: "/informatics/dashboard", label: "Personal Dashboard", icon: PieChart },
-      { path: "/informatics/insights", label: "Travel Insights", icon: TrendingUp },
+      {
+        path: "/informatics",
+        label: "Onboarding",
+        icon: Sparkles,
+        description: "First-time setup wizard where users define their travel style using sliders (comfort vs cost, travel pacing) and set their annual travel budget. Personalizes the entire informatics experience."
+      },
+      {
+        path: "/informatics/dashboard",
+        label: "Personal Dashboard",
+        icon: PieChart,
+        description: "Personal travel hub showing budget donut chart (yearly budget used), metric cards (trips taken, avg overspend, savings goal progress), active trip watchlist, and insights carousel with live currency exchange rates."
+      },
+      {
+        path: "/informatics/insights",
+        label: "Travel Insights",
+        icon: TrendingUp,
+        description: "Analytics page displaying spending patterns, travel statistics, cost comparisons across trips, and personalized recommendations based on travel history."
+      },
       {
         path: "/informatics/planner",
         label: "Trip Planner",
         icon: ClipboardList,
+        description: "Trip management interface to create, view, and organize upcoming and past trips. Shows trip cards with destination, dates, budget status, and quick actions.",
         children: [
-          { path: "/informatics/planner/[id]/expenses", label: "Expense Tracking", icon: Wallet },
+          {
+            path: "/informatics/planner/[id]/expenses",
+            label: "Expense Tracking",
+            icon: Wallet,
+            description: "Per-trip expense tracker to log spending by category (food, transport, accommodation, activities). Shows running total vs budget with visual progress indicators."
+          },
         ]
       },
-      { path: "/informatics/reflection", label: "Travel Reflections", icon: BookOpen },
+      {
+        path: "/informatics/reflection",
+        label: "Travel Reflections",
+        icon: BookOpen,
+        description: "Post-trip reflection journal to record memories, lessons learned, ratings, and personal notes. Helps users improve future travel planning based on past experiences."
+      },
       {
         path: "/informatics/settings",
         label: "Settings",
         icon: Settings,
+        description: "Settings hub for managing personal preferences, account details, and privacy controls. Central access point for profile and privacy sub-pages.",
         children: [
-          { path: "/informatics/settings/profile", label: "Edit Profile", icon: User },
-          { path: "/informatics/settings/privacy", label: "Privacy Settings", icon: Shield },
+          {
+            path: "/informatics/settings/profile",
+            label: "Edit Profile",
+            icon: User,
+            description: "Profile management page to update personal information, travel preferences, default currency, notification settings, and profile picture."
+          },
+          {
+            path: "/informatics/settings/privacy",
+            label: "Privacy Settings",
+            icon: Shield,
+            description: "Privacy controls for managing data sharing preferences, visibility of travel history, and account security options like two-factor authentication."
+          },
         ]
       },
     ],
+    userFlow: {
+      steps: [
+        "Complete onboarding: Set comfort vs cost, travel pacing, annual budget",
+        "View personal dashboard with budget donut chart & trip metrics",
+        "Track trips in watchlist with currency exchange insights",
+        "Plan trips and track expenses per trip",
+        "Reflect on past travels and manage settings"
+      ],
+      entryPoints: ["Nav 'My Travel'", "Post-login redirect"]
+    }
   },
   {
     id: 4,
@@ -124,38 +226,87 @@ const groups: GroupConfig[] = [
         path: "/community",
         label: "Community Hub",
         icon: Users,
+        description: "Central community page featuring search bar, 'My Trips' section showing user's travel history, upcoming community events carousel, and featured community stories with verified badges.",
         children: [
           {
             path: "/community/stories",
             label: "Community Stories",
             icon: BookOpen,
+            description: "Browseable feed of community travel stories with filters by destination, category, and popularity. Shows story cards with author, destination, preview, and engagement metrics.",
             children: [
-              { path: "/community/stories/create", label: "Create Story", icon: PlusCircle },
+              {
+                path: "/community/stories/create",
+                label: "Create Story",
+                icon: PlusCircle,
+                description: "Story creation form with rich text editor, image upload, destination tagging, category selection, and privacy options. Allows drafts and scheduled publishing."
+              },
               {
                 path: "/community/stories/[id]",
                 label: "Story Detail",
                 icon: FileText,
+                description: "Full story view with author info, complete content, photo gallery, comments section, like/save actions, and related stories. Shows verified badge for trusted authors.",
                 children: [
-                  { path: "/community/stories/[id]/report", label: "Report Story", icon: Flag },
-                  { path: "/community/stories/[id]/report/success", label: "Report Success", icon: CheckCircle },
+                  {
+                    path: "/community/stories/[id]/report",
+                    label: "Report Story",
+                    icon: Flag,
+                    description: "Report form to flag inappropriate content with category selection (spam, offensive, misinformation, etc.), description field, and optional evidence upload."
+                  },
+                  {
+                    path: "/community/stories/[id]/report/success",
+                    label: "Report Success",
+                    icon: CheckCircle,
+                    description: "Confirmation page shown after successfully submitting a report. Displays reference number and explains the review process timeline."
+                  },
                 ]
               },
             ]
           },
-          { path: "/community/events", label: "Upcoming Events", icon: CalendarDays },
+          {
+            path: "/community/events",
+            label: "Upcoming Events",
+            icon: CalendarDays,
+            description: "Calendar view of community events including meetups, travel workshops, destination showcases, and cultural celebrations. Allows RSVP and calendar integration."
+          },
         ]
       },
-      { path: "/login", label: "User Login", icon: LogIn },
-      { path: "/register", label: "User Registration", icon: UserPlus },
+      {
+        path: "/login",
+        label: "User Login",
+        icon: LogIn,
+        description: "Authentication page with email/password login form, 'Remember me' option, forgot password link, and social login buttons (Google, Facebook). Redirects to dashboard after success."
+      },
+      {
+        path: "/register",
+        label: "User Registration",
+        icon: UserPlus,
+        description: "New user signup form collecting name, email, password, and travel preferences. Includes terms acceptance, optional newsletter subscription, and email verification flow."
+      },
       {
         path: "/admin",
         label: "Admin Dashboard",
         icon: ShieldCheck,
+        description: "Administrative control panel showing pending reports, user statistics, content moderation queue, and platform health metrics. Restricted to admin role users.",
         children: [
-          { path: "/admin/reports/[id]", label: "Report Detail", icon: FileText },
+          {
+            path: "/admin/reports/[id]",
+            label: "Report Detail",
+            icon: FileText,
+            description: "Detailed report review page showing reported content, reporter info, report reason, evidence, and action buttons (dismiss, warn user, remove content, ban user)."
+          },
         ]
       },
     ],
+    userFlow: {
+      steps: [
+        "Browse community hub: My Trips, Events, Stories",
+        "Read and interact with community stories",
+        "Create and share your own travel stories",
+        "Report inappropriate content if needed",
+        "Admin: Review and manage reported content"
+      ],
+      entryPoints: ["Nav 'Community'", "Post-registration"]
+    }
   },
   {
     id: 5,
@@ -165,10 +316,34 @@ const groups: GroupConfig[] = [
     bgColor: "bg-rose-50",
     borderColor: "border-rose-200",
     routes: [
-      { path: "/predictions", label: "Trip Planning Start", icon: Sparkles },
-      { path: "/predictions/preferences", label: "Travel Preferences", icon: SlidersHorizontal },
-      { path: "/predictions/plan", label: "AI-Generated Plan", icon: ClipboardList },
+      {
+        path: "/predictions",
+        label: "Trip Planning Start",
+        icon: Sparkles,
+        description: "First step of the planning wizard. Collects destination input, travel date range picker, and number of travelers selector. Validates and stores data in session before proceeding."
+      },
+      {
+        path: "/predictions/preferences",
+        label: "Travel Preferences",
+        icon: SlidersHorizontal,
+        description: "Second step collecting travel style preferences: budget range, accommodation type, activity interests (adventure, culture, relaxation, food), pace preference, and accessibility needs."
+      },
+      {
+        path: "/predictions/plan",
+        label: "AI-Generated Plan",
+        icon: ClipboardList,
+        description: "Final step displaying the AI-generated personalized itinerary based on inputs. Shows day-by-day plan with activities, estimated costs, time allocations, and alternative suggestions."
+      },
     ],
+    userFlow: {
+      steps: [
+        "Enter destination, travel dates, number of travelers",
+        "Select travel preferences and style",
+        "Receive AI-generated personalized itinerary",
+        "Review and customize the plan"
+      ],
+      entryPoints: ["Home CTA 'Plan Your Trip'", "Nav 'Smart Planner'"]
+    }
   },
 ];
 
@@ -186,22 +361,27 @@ function RouteLink({ route, depth = 0 }: { route: RouteItem; depth?: number }) {
 
   return (
     <div className={cn("flex flex-col", depth > 0 && "ml-6 border-l-2 border-slate-200 pl-4")}>
-      <div className="flex items-center gap-2 py-2">
-        <Icon className="w-4 h-4 text-slate-500" />
-        <Link
-          href={examplePath}
-          className="text-sm text-slate-700 hover:text-blue-600 hover:underline"
-        >
-          {route.label}
-        </Link>
-        <code className="text-xs text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
-          {route.path}
-        </code>
-        {isDynamic && (
-          <span className="text-xs text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded">
-            example: {examplePath}
-          </span>
-        )}
+      <div className="py-3 border-b border-slate-100 last:border-b-0">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Icon className="w-4 h-4 text-slate-500 flex-shrink-0" />
+          <Link
+            href={examplePath}
+            className="text-sm font-medium text-slate-700 hover:text-blue-600 hover:underline"
+          >
+            {route.label}
+          </Link>
+          <code className="text-xs text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+            {route.path}
+          </code>
+          {isDynamic && (
+            <span className="text-xs text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded">
+              example: {examplePath}
+            </span>
+          )}
+        </div>
+        <p className="text-xs text-slate-500 mt-1.5 ml-6 leading-relaxed">
+          {route.description}
+        </p>
       </div>
       {route.children?.map((child) => (
         <RouteLink key={child.path} route={child} depth={depth + 1} />
@@ -214,19 +394,32 @@ function GroupCard({ group }: { group: GroupConfig }) {
   const pageCount = countPages(group.routes);
 
   return (
-    <div className={cn("rounded-xl border-2 p-6", group.borderColor, group.bgColor)}>
+    <div className={cn(
+      "rounded-xl border-2 p-6 transition-all",
+      group.borderColor,
+      group.bgColor,
+      group.highlighted && "ring-4 ring-violet-400 ring-offset-2 shadow-xl scale-[1.01]"
+    )}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className={cn(
             "w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold",
-            group.bgColor, group.color
+            group.bgColor, group.color,
+            group.highlighted && "ring-2 ring-violet-400"
           )}>
             {group.id}
           </div>
           <div>
-            <h2 className={cn("text-lg font-semibold", group.color)}>
-              Group {group.id}: {group.name}
-            </h2>
+            <div className="flex items-center gap-2">
+              <h2 className={cn("text-lg font-semibold", group.color)}>
+                Group {group.id}: {group.name}
+              </h2>
+              {group.highlighted && (
+                <span className="px-2 py-0.5 text-xs font-bold bg-violet-600 text-white rounded-full animate-pulse">
+                  CURRENT FOCUS
+                </span>
+              )}
+            </div>
             <p className="text-sm text-slate-500">{group.description}</p>
           </div>
         </div>
@@ -238,7 +431,52 @@ function GroupCard({ group }: { group: GroupConfig }) {
         </div>
       </div>
 
+      {/* User Flow Section */}
+      <div className={cn(
+        "mb-4 p-4 rounded-lg border",
+        group.highlighted ? "bg-violet-100 border-violet-300" : "bg-white/50 border-slate-200"
+      )}>
+        <h3 className={cn("text-sm font-semibold mb-3 flex items-center gap-2", group.color)}>
+          <Navigation2 className="w-4 h-4" />
+          User Flow
+        </h3>
+        <div className="space-y-2">
+          {group.userFlow.steps.map((step, index) => (
+            <div key={index} className="flex items-start gap-2">
+              <div className={cn(
+                "w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5",
+                group.highlighted ? "bg-violet-600 text-white" : "bg-slate-200 text-slate-600"
+              )}>
+                {index + 1}
+              </div>
+              <span className="text-sm text-slate-700">{step}</span>
+              {index < group.userFlow.steps.length - 1 && (
+                <ArrowRight className="w-3 h-3 text-slate-400 flex-shrink-0 mt-1 hidden sm:block" />
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="mt-3 pt-3 border-t border-slate-200">
+          <p className="text-xs text-slate-500 mb-1">Entry Points:</p>
+          <div className="flex flex-wrap gap-2">
+            {group.userFlow.entryPoints.map((entry, index) => (
+              <span key={index} className={cn(
+                "text-xs px-2 py-1 rounded-full",
+                group.highlighted ? "bg-violet-200 text-violet-700" : "bg-slate-100 text-slate-600"
+              )}>
+                {entry}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Routes Section */}
       <div className="bg-white rounded-lg p-4 border border-slate-200">
+        <h3 className="text-sm font-semibold text-slate-600 mb-2 flex items-center gap-2">
+          <Map className="w-4 h-4" />
+          Routes
+        </h3>
         {group.routes.map((route) => (
           <RouteLink key={route.path} route={route} />
         ))}
@@ -254,7 +492,7 @@ function countPages(routes: RouteItem[]): number {
 }
 
 export default function SitemapPage() {
-  const totalPages = groups.reduce((sum, g) => sum + countPages(g.routes), 0) + 2; // +2 for home and search
+  const totalPages = groups.reduce((sum, g) => sum + countPages(g.routes), 0) + 3; // +3 for home, search, sitemap
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -291,19 +529,41 @@ export default function SitemapPage() {
             </div>
           </div>
           <div className="bg-slate-50 rounded-lg p-4">
-            <div className="flex items-center gap-2 py-2">
-              <Home className="w-4 h-4 text-slate-500" />
-              <Link href="/" className="text-sm text-slate-700 hover:text-blue-600 hover:underline">
-                Home / Landing Page
-              </Link>
-              <code className="text-xs text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">/</code>
+            <div className="py-3 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <Home className="w-4 h-4 text-slate-500" />
+                <Link href="/" className="text-sm font-medium text-slate-700 hover:text-blue-600 hover:underline">
+                  Home / Landing Page
+                </Link>
+                <code className="text-xs text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">/</code>
+              </div>
+              <p className="text-xs text-slate-500 mt-1.5 ml-6 leading-relaxed">
+                Main landing page with hero section featuring 3-step onboarding explanation, feature grid showcasing all 5 groups with icons and descriptions, benefits listing, and primary CTAs linking to Smart Planner (Group 5) and AI Assistant (Group 1).
+              </p>
             </div>
-            <div className="flex items-center gap-2 py-2">
-              <Search className="w-4 h-4 text-slate-500" />
-              <Link href="/search" className="text-sm text-slate-700 hover:text-blue-600 hover:underline">
-                Global Search
-              </Link>
-              <code className="text-xs text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">/search</code>
+            <div className="py-3 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <Search className="w-4 h-4 text-slate-500" />
+                <Link href="/search" className="text-sm font-medium text-slate-700 hover:text-blue-600 hover:underline">
+                  Global Search
+                </Link>
+                <code className="text-xs text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">/search</code>
+              </div>
+              <p className="text-xs text-slate-500 mt-1.5 ml-6 leading-relaxed">
+                Universal search page accessible from navigation. Searches across destinations, community stories, events, and user content. Provides filtered results with quick links to relevant sections.
+              </p>
+            </div>
+            <div className="py-3">
+              <div className="flex items-center gap-2">
+                <Map className="w-4 h-4 text-slate-500" />
+                <Link href="/sitemap" className="text-sm font-medium text-slate-700 hover:text-blue-600 hover:underline">
+                  Sitemap (This Page)
+                </Link>
+                <code className="text-xs text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">/sitemap</code>
+              </div>
+              <p className="text-xs text-slate-500 mt-1.5 ml-6 leading-relaxed">
+                Self-documenting visualization of the entire platform structure. Displays all 5 groups with color-coded cards, hierarchical route structure, page descriptions, user flows, and convergence explanation.
+              </p>
             </div>
           </div>
         </div>
@@ -315,14 +575,101 @@ export default function SitemapPage() {
           ))}
         </div>
 
+        {/* How Groups Converge */}
+        <div className="mt-12 p-6 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border border-slate-700 text-white">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+              <GitMerge className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold">How Everything Converges</h2>
+              <p className="text-sm text-slate-400">The unified travel planning experience</p>
+            </div>
+          </div>
+
+          {/* Convergence Diagram */}
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            {/* Navigation Hub */}
+            <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+              <h3 className="font-semibold text-emerald-400 mb-3 flex items-center gap-2">
+                <Navigation2 className="w-4 h-4" />
+                Unified Navigation Bar
+              </h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-400">Home</span>
+                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <span className="text-rose-400">Plan Trip</span>
+                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <span className="text-blue-400">Dashboard</span>
+                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <span className="text-violet-400">My Travel</span>
+                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <span className="text-orange-400">Community</span>
+                </div>
+                <p className="text-slate-500 text-xs mt-2">All groups accessible from any page via shared navigation</p>
+              </div>
+            </div>
+
+            {/* Data Flow */}
+            <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+              <h3 className="font-semibold text-blue-400 mb-3 flex items-center gap-2">
+                <TrendingUp className="w-4 h-4" />
+                Cross-Group Data Flow
+              </h3>
+              <div className="space-y-1 text-sm">
+                <p><span className="text-rose-400">G5 Predictions</span> <span className="text-slate-500">→ Creates trip details</span></p>
+                <p><span className="text-blue-400">G2 Dashboard</span> <span className="text-slate-500">→ Shows live destination data</span></p>
+                <p><span className="text-violet-400">G3 Informatics</span> <span className="text-slate-500">→ Tracks budget & expenses</span></p>
+                <p><span className="text-orange-400">G4 Community</span> <span className="text-slate-500">→ Shares travel experiences</span></p>
+                <p><span className="text-emerald-400">G1 Chat</span> <span className="text-slate-500">→ Assists across all planning</span></p>
+              </div>
+            </div>
+          </div>
+
+          {/* User Journey Paths */}
+          <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+            <h3 className="font-semibold text-yellow-400 mb-4">Recommended User Journeys</h3>
+            <div className="grid md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-slate-400 text-xs mb-2">First-Time Visitor</p>
+                <div className="flex flex-wrap items-center gap-1">
+                  <span className="px-2 py-1 bg-slate-700 rounded text-slate-200">/</span>
+                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <span className="px-2 py-1 bg-rose-900/50 rounded text-rose-300">/predictions</span>
+                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <span className="px-2 py-1 bg-emerald-900/50 rounded text-emerald-300">/chat</span>
+                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <span className="px-2 py-1 bg-blue-900/50 rounded text-blue-300">/dashboard</span>
+                </div>
+              </div>
+              <div>
+                <p className="text-slate-400 text-xs mb-2">Returning User</p>
+                <div className="flex flex-wrap items-center gap-1">
+                  <span className="px-2 py-1 bg-orange-900/50 rounded text-orange-300">/login</span>
+                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <span className="px-2 py-1 bg-violet-900/50 rounded text-violet-300">/informatics</span>
+                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <span className="px-2 py-1 bg-blue-900/50 rounded text-blue-300">/dashboard</span>
+                  <ArrowRight className="w-3 h-3 text-slate-500" />
+                  <span className="px-2 py-1 bg-orange-900/50 rounded text-orange-300">/community</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Legend */}
-        <div className="mt-12 p-6 bg-white rounded-xl border border-slate-200">
+        <div className="mt-8 p-6 bg-white rounded-xl border border-slate-200">
           <h3 className="font-semibold text-slate-700 mb-4">Legend</h3>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
             {groups.map((group) => (
               <div key={group.id} className="flex items-center gap-2">
                 <div className={cn("w-4 h-4 rounded", group.bgColor, "border", group.borderColor)} />
                 <span className="text-slate-600">Group {group.id}</span>
+                {group.highlighted && (
+                  <span className="text-xs text-violet-600 font-medium">(Focus)</span>
+                )}
               </div>
             ))}
           </div>
