@@ -22,6 +22,7 @@ import {
   MapPin
 } from "lucide-react";
 import { StoryCard } from "@/components/community/story-card";
+import { ReportModal } from "@/components/community/report-modal";
 
 // Mock data for the story detail
 const storyData = {
@@ -182,7 +183,9 @@ export default function StoryDetailPage({
                   <Facebook className="h-4 w-4 hover:text-blue-600 cursor-pointer transition-colors" />
                   <Twitter className="h-4 w-4 hover:text-blue-400 cursor-pointer transition-colors" />
                   <LinkIcon className="h-4 w-4 hover:text-neutral-600 cursor-pointer transition-colors" />
-                  <AlertCircle className="h-4 w-4 hover:text-red-500 cursor-pointer transition-colors" />
+                  <ReportModal>
+                    <AlertCircle className="h-4 w-4 hover:text-red-500 cursor-pointer transition-colors" />
+                  </ReportModal>
                 </div>
               </div>
 
