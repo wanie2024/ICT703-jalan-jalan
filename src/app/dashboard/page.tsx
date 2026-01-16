@@ -13,29 +13,8 @@ import {
   Users,
   Wallet,
 } from "lucide-react"
+import { ConflictItem, SummaryStat, DashboardDestination } from "@/types"
 
-type SummaryStat = {
-  label: string
-  value: string
-  sub: string
-  icon: React.ReactNode
-}
-
-type ConflictItem = {
-  severity: "high" | "medium" | "low"
-  title: string
-  description: string
-}
-
-type Destination = {
-  title: string
-  description: string
-  matchLabel: string
-  cost: string
-  season: string
-  interests: string
-  alignmentPercent: number
-}
 
 function severityStyles(severity: ConflictItem["severity"]) {
   switch (severity) {
@@ -151,7 +130,7 @@ export default function DashboardPage() {
     },
   ]
 
-  const destinations: Destination[] = [
+  const destinations: DashboardDestination[] = [
     {
       title: "Melaka Historic City",
       description:
