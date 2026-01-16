@@ -1,9 +1,47 @@
 import { Member } from '../../types';
-import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
 
 interface PreferenceChartProps {
     members: Member[];
 }
+
+const seasonDetails: { [key: string]: { description: string; monthRange: string } } = {
+    Raya: {
+        description: "Eid celebration - vibrant festivities and family gatherings",
+        monthRange: "April - May",
+    },
+    CNY: {
+        description: "Chinese New Year - colorful celebrations and cultural traditions",
+        monthRange: "January - February",
+    },
+    Merdeka: {
+        description: "Malaysia Independence Day - patriotic celebrations and festivities",
+        monthRange: "August",
+    },
+    Deepavali: {
+        description: "Festival of Lights - cultural and spiritual celebrations",
+        monthRange: "October - November",
+    },
+};
+
+const CustomSeasonTooltip = ({ active, payload }: { active?: boolean; payload?: any[] }) => {
+    if (active && payload && payload.length) {
+        const data = payload[0];
+        const season = data.payload.season;
+        const percentage = ((data.value / data.payload.totalMembers) * 100).toFixed(0);
+
+        return (
+            <div className="rounded-md border border-gray-300 bg-white px-2 py-1 shadow-md">
+                <p className="text-xs font-semibold text-gray-900">{season}</p>
+                <p className="text-xs text-violet-700">
+                    {data.value} / {data.payload.totalMembers} ({percentage}%)
+                </p>
+            </div>
+        );
+    }
+
+    return null;
+};
 
 export function PreferenceChart({ members }: PreferenceChartProps) {
     // Calculate interest distribution
@@ -30,6 +68,7 @@ export function PreferenceChart({ members }: PreferenceChartProps) {
     const radarData = Object.entries(seasonCounts).map(([season, count]) => ({
         season,
         count,
+        totalMembers: members.length,
     }));
 
     const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#ef4444', '#6366f1'];
@@ -75,6 +114,15 @@ export function PreferenceChart({ members }: PreferenceChartProps) {
                     <ResponsiveContainer width="100%" height={300}>
                         <RadarChart data={radarData}>
                             <PolarGrid />
+                            <Tooltip
+                                content={<CustomSeasonTooltip />}
+                                contentStyle={{
+                                    backgroundColor: "transparent",
+                                    border: "none",
+                                    padding: 0,
+                                }}
+                                cursor={{ fill: "rgba(139, 92, 246, 0.1)" }}
+                            />
                             <PolarAngleAxis dataKey="season" />
                             <Radar
                                 name="Preferences"

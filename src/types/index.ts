@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface Member {
     id: string;
     name: string;
@@ -26,4 +28,28 @@ export interface Conflict {
     type: 'budget' | 'interest' | 'season';
     message: string;
     severity: 'high' | 'medium' | 'low';
+}
+
+// Dashboard Page Types
+export type SummaryStat = {
+  label: string
+  value: string
+  sub: string
+  icon: React.ReactNode
+}
+
+export type ConflictItem = {
+  severity: "high" | "medium" | "low"
+  title: string
+  description: string
+}
+
+export type DashboardDestination = {
+  title: string
+  description: string
+  matchLabel: string
+  cost: string
+  season: string
+  interests: string
+  alignmentPercent: number
 }
