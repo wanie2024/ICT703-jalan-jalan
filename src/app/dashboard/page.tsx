@@ -6,6 +6,13 @@ import TabBar from "../../components/ui/TabBar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
   AlertTriangle,
   CalendarDays,
   Coins,
@@ -59,6 +66,8 @@ function Pill({
 }
 
 export default function DashboardPage() {
+  const [conflictFilter, setConflictFilter] = React.useState<string>("all")
+
   const summary: SummaryStat[] = [
     {
       label: "Group Size",
@@ -153,6 +162,17 @@ export default function DashboardPage() {
     },
   ]
 
+  const filteredConflicts = conflicts.filter((c) => {
+    if (conflictFilter === "all") return true
+    return c.severity === conflictFilter
+  })
+
+  const conflictCounts = {
+    high: conflicts.filter((c) => c.severity === "high").length,
+    medium: conflicts.filter((c) => c.severity === "medium").length,
+    low: conflicts.filter((c) => c.severity === "low").length,
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-violet-50 to-slate-100 text-slate-900">
       <div className="sticky top-0 z-20">
@@ -239,21 +259,37 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-[#AD46FF] bg-white">
-              <CardHeader className="pb-2">
+            <Card className="border-[#AD46FF] gap-1 bg-white">
+              <CardHeader className="pb-0">
                 <CardTitle className="text-xl font-bold">
                   Potential Conflicts
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-2">
-                <div className="flex flex-wrap items-center gap-4">
-                  <Pill dotClassName="bg-red-500">High (2)</Pill>
-                  <Pill dotClassName="bg-yellow-400">Medium (4)</Pill>
-                  <Pill dotClassName="bg-blue-500">Low (1)</Pill>
-                </div>
+              <CardContent className="pt-1">
+                <Select value={conflictFilter} onValueChange={setConflictFilter}>
+                  <SelectTrigger 
+                    className={`w-[180px] ${
+                      conflictFilter === "high" 
+                        ? "border-red-500 text-red-700 bg-red-50" 
+                        : conflictFilter === "medium"
+                        ? "border-yellow-500 text-yellow-700 bg-yellow-50"
+                        : conflictFilter === "low"
+                        ? "border-blue-500 text-blue-700 bg-blue-50"
+                        : "border-violet-300 text-violet-700 bg-violet-50"
+                    }`}
+                  >
+                    <SelectValue placeholder="Filter" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All ({conflicts.length})</SelectItem>
+                    <SelectItem value="high">High ({conflictCounts.high})</SelectItem>
+                    <SelectItem value="medium">Medium ({conflictCounts.medium})</SelectItem>
+                    <SelectItem value="low">Low ({conflictCounts.low})</SelectItem>
+                  </SelectContent>
+                </Select>
 
                 <div className="mt-4 space-y-2">
-                  {conflicts.map((c, idx) => {
+                  {filteredConflicts.map((c, idx) => {
                     const s = severityStyles(c.severity)
                     return (
                       <div
